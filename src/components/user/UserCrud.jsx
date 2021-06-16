@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react' 
 import axios from 'axios'
-import Main from '../templete/Main'
 
 const headerProps = {
   icon: 'users',
@@ -12,19 +11,23 @@ const headerProps = {
 
 export default function UserCrud() {
 
- const[users, setUsers] = useState([]);
- const[dividas, setDividas] = useState([]);
+  const[id, setId] = useState('');
 
- const[desc_divida, setDescDivida] = useState('');
- const[valor_divida, setValorDivida] = useState('');
+  const[users, setUsers] = useState([]);
+  const[dividas, setDividas] = useState([]);
 
- const[id, setId] = useState('');
+  const[desc_divida, setDescDivida] = useState('');
+  const[valor_divida, setValorDivida] = useState('');
+
+  const[editing, setEditing] = useState(false);
+  const[userEditing, setUserEditing] = useState([])
+  const [idDivida, setIdDivida] = useState("")
+
 
  useEffect(() => {
    axios.get('https://provadev.xlab.digital/api/v1/divida?uuid=bad2fe24-5b1d-44e2-93e5-a7c958b414d5')
    .then(resp => {
       setDividas(resp.data.result)
-      console.log(resp.data)
    })
  }, []);
 
@@ -37,12 +40,46 @@ export default function UserCrud() {
  }, []);
 
   function salvar() {
-    axios.post('https://provadev.xlab.digital/api/v1/divida?uuid=bad2fe24-5b1d-44e2-93e5-a7c958b414d5', 
-    {
-      idUsuario: id,
-      motivo: desc_divida,
-      valor: valor_divida
-    }).then(resp => console.log(resp.data));
+    if(editing) {
+      axios.put(`https://provadev.xlab.digital/api/v1/divida/${idDivida}?uuid=bad2fe24-5b1d-44e2-93e5-a7c958b414d5`,{
+        idUsuario: id,
+        motivo: desc_divida,
+        valor: valor_divida
+      }).then(resp => console.log(resp.data));
+    } else {
+      axios.post('https://provadev.xlab.digital/api/v1/divida?uuid=bad2fe24-5b1d-44e2-93e5-a7c958b414d5', 
+      {
+        idUsuario: id,
+        motivo: desc_divida,
+        valor: valor_divida
+      }).then(resp => setDividas([ ...dividas, resp.data ]));
+    }
+   
+  }
+
+  function del(id) {
+    axios.delete(`https:provadev.xlab.digital/api/v1/divida/${id}?uuid=bad2fe24-5b1d-44e2-93e5-a7c958b414d5`)
+    .then(resp => {
+      const dividasFilter = dividas.filter(divida => divida._id !== id)
+      setDividas(dividasFilter)
+    })
+  }
+
+  function clear() {
+    setEditing(false)
+    setIdDivida('')
+    setId('')
+    setDescDivida('')
+    setValorDivida('')
+  }
+
+  function upDate(divida) {
+    setUserEditing(divida)
+    setEditing(true)
+    setIdDivida(divida._id)
+    setId(divida.idUsuario)
+    setDescDivida(divida.motivo)
+    setValorDivida(divida.valor)
   }
 
 
@@ -94,7 +131,7 @@ export default function UserCrud() {
       <div className="form">
         <div className="row">
           <div className="col-12 col-md-6">
-            <div className="form-group">
+            <div className="form-group mt-2">
               <label>Cliente</label>
               <select className="form-control" onChange={e => 
                 setId(e.target.value)} >
@@ -118,10 +155,10 @@ export default function UserCrud() {
           </div>
 
           <div className="col-12 col-md-6">
-            <div className="form-group">
+            <div className="form-group mt-2">
               <label>Motivo</label>
               <input type="text" className="form-control"
-                name="email"
+                name="divida"
                 value={desc_divida}
                 onChange={e => setDescDivida(e.target.value)}
                 placeholder="Ex: dívida cartão de crédito" />
@@ -145,12 +182,12 @@ export default function UserCrud() {
         <div className="row">
           <div className="col-12 d-flex justify-content-end">
             <button className="btn btn-primary m-2"
-              onClick={ salvar }>
-              Salvar
+              onClick={ () => salvar() }>
+              {editing ? 'Atualizar' : 'Salvar'}
             </button>
 
             <button className="btn btn-secondary m-2"
-              onClick={e => this.clear(e) }>
+              onClick={ clear }>
               Cancelar
             </button>
           </div>
@@ -177,11 +214,11 @@ export default function UserCrud() {
                 <td>{user.valor}</td>
                 <td>
                   <button className="btn btn-warning m-2"
-                    onClick={() => this.load(user.email)}>
+                    onClick={() => upDate(user)}>
                     <i className="fa fa-pencil"></i>
                   </button>
                   <button className="btn btn-danger m-2"
-                    onClick={() => this.remove(user)}>
+                    onClick={() => del(user._id)}>
                     <i className="fa fa-trash"></i>
                   </button>
                 </td>
