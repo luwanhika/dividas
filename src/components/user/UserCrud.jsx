@@ -167,6 +167,7 @@ export default function UserCrud() {
       <table className="table mt-4">
       <thead>
         <tr>
+          <th>ID</th>
           <th>Nome</th>
           <th>Motivo</th>
           <th>Valor</th>
@@ -179,6 +180,7 @@ export default function UserCrud() {
           dividas.map(user => 
              (
               <tr key={user.id}>
+                <td>{user.idUsuario}</td>
                 <td>{user.username}</td>
                 <td>{user.motivo}</td>
                 <td>{user.valorFormatted}</td>
