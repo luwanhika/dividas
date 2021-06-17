@@ -6,6 +6,5 @@ export default props =>
     subtitle="projeto gerenciamento de devedores.">
     <div className="display-4">Bem Vindo!</div>
     <hr />
-    <p className="m-0">Sistema para exemplificar a construção
-      de um cadastro em React!</p>
+    <p className="m-0">Sistema de gerenciamento de dívidas em React!</p>
   </Main>
