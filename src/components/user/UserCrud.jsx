@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react' 
+import React, { useState, useEffect } from 'react'
+import Main from '../templete/Main'
 import axios from 'axios'
 
 const headerProps = {
@@ -102,6 +103,7 @@ export default function UserCrud() {
 
     return (
       <>
+      <Main { ...headerProps }>
       <div className="form">
         <div className="row">
           <div className="col-12 col-md-6">
@@ -200,6 +202,8 @@ export default function UserCrud() {
         }
       </tbody>
     </table>
+      </Main>
+      
     </>
     )
 
